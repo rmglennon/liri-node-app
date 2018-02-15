@@ -1,13 +1,32 @@
 // add required packages to project and import keys.js file
 require("dotenv").config();
 var keys = require("./keys.js");
+// var inquirer = require("inquirer");
 
-var Twitter = require('twitter');
-var Spotify = require('node-spotify-api');
-var request = require('request');
+var Twitter = require("twitter");
+var Spotify = require("node-spotify-api");
+var request = require("request");
 
 var spotify = new Spotify(keys.spotify);
 var client = new Twitter(keys.twitter);
+
+//TODO: make into switch case
+//TODO: switch to inquirer to enable multiple words in searches
+function chooseAppToRun() {
+  if (process.argv[2] === "my-tweets") {
+    getTweets();
+  } else if (process.argv[2] === "spotify-this-song") {
+    spotifySong();
+  } else if (process.argv[2] === "movie-this") {
+    getMovie();
+  } else if (process.argv[2] === "do-what-it-says") {
+    // TODO: write function
+    console.log("TODO: Write this");
+  }
+  else {
+    console.log("Usage is my-tweets, spotify-this-song, movie-this, or do-what-it-says");
+  }
+}
 
 // function to get tweets from Twitter
 function getTweets() {
@@ -31,9 +50,12 @@ function getTweets() {
 // function to get song information from Spotify
 function spotifySong() {
 
-  // TODO: This is hard-coded
-    // TODO: if there is no arg, default to song
-  var songQuery = "never gonna give you up";
+  // song to search is input argument
+  var songQuery = process.argv[3];
+
+  if (!songQuery) {
+    songQuery = "Never Gonna Give You Up";
+  }
 
   // use tracks endpoints to search for songs on Spotify
   spotify.search({ type: "track", query: songQuery },
@@ -70,5 +92,36 @@ function spotifySong() {
   });
 }
 
+// function to get movie information from OMDb
+function getMovie() {
+
+  // title to search is input argument
+  var title = process.argv[3];
+
+  if (!title) {
+    title = "Groundhog Day";
+  }
+
+  // use request package to make a request to OMDb for the input title
+  request("http://www.omdbapi.com/?t=" + title + "&apikey=trilogy", function(error, response, body) {
+
+    // if no error and HTTP code 200, then parse movie information
+    if (!error && response.statusCode === 200) {
+
+      console.log("Title: " + JSON.parse(body).Title);
+      console.log("Year of release: " + JSON.parse(body).Year);
+      console.log("IMDb rating: " + JSON.parse(body).imdbRating);
+      console.log("Rotten Tomatoes rating: " + JSON.parse(body).Ratings[1].Value);
+      console.log("Country of origin: " + JSON.parse(body).Country);
+      console.log("Language: " + JSON.parse(body).Language);
+      console.log("Plot: " + JSON.parse(body).Plot);
+      console.log("Actors: " + JSON.parse(body).Actors);
+    }
+  });
+
+}
+
 //getTweets();
 //spotifySong();
+//getMovie();
+chooseAppToRun();
