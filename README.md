@@ -21,11 +21,13 @@ When optional parameters are not included, a default song or movie is returned.
 
 **Example:**
 
-`$ node liri.js spotify-this-song "shape of you"
+```
+$ node liri.js spotify-this-song "shape of you"
 Artist: Ed Sheeran
 Song: Shape of You
 Album: Shape of You
-Preview on Spotify: https://p.scdn.co/mp3-preview/84462d8e1e4d0f9e5ccd06f0da390f65843774a2?cid=3bcfb1275778497cacae30e40bda8d33`
+Preview on Spotify: https://p.scdn.co/mp3-preview/84462d8e1e4d0f9e5ccd06f0da390f65843774a2?cid=3bcfb1275778497cacae30e40bda8d33
+```
   
 ## Technology
 
