@@ -3,8 +3,6 @@ require("dotenv").config();
 var keys = require("./keys.js");
 var fs = require("fs");
 
-// var inquirer = require("inquirer");
-
 var Twitter = require("twitter");
 var Spotify = require("node-spotify-api");
 var request = require("request");
@@ -12,15 +10,13 @@ var request = require("request");
 var spotify = new Spotify(keys.spotify);
 var client = new Twitter(keys.twitter);
 
-//TODO: switch to inquirer to enable multiple words in searches
-
 // function to determine the input command and run the function matching that command
 function chooseAppToRun() {
   
   // capture the input as either two or three input arguments
-  var app = process.argv[2];
+  var app = process.argv[2].trim();
   if (process.argv[3]) {
-    var param = process.argv[3];
+    var param = process.argv[3].trim();
   }
   
   // match the input with the function
@@ -52,7 +48,6 @@ function getTweets() {
     if (error) {
       throw error;
     }
-    
     // return 20 most recent tweets and timestamp
     for (var i = 0; i < 20; i++) {
       console.log("Tweet " + (i + 1) + ": " + tweets[i].text);
@@ -77,7 +72,7 @@ function spotifySong(param) {
   
   function(err, data) {
     if (err) {
-      return console.log('Error occurred: ' + err);
+      return console.log("Error occurred: " + err + ". You might try searching for another song title.");
     }
     
     var songName = data.tracks.items[0].name;
@@ -86,15 +81,12 @@ function spotifySong(param) {
     var previewURL = data.tracks.items[0].preview_url;
     
     // print information about the song
-    // add statements to check if tracks data exists before trying to display it. Not all songs or information is found, and not all songs are available to preview on Spotify. If that happens, the search results can return null or undefined values.
-    if (songName) {
-      console.log("Song: " + songName);
-    }
-    else {
-      console.log("That song was not found. Try another one.");
-    }
+    // add statements to check if tracks data exists before trying to display it. Not all songs or information is found, and not all songs are available to preview on Spotify. If that happens, the search results can return null values.
     if (artist) {
       console.log("Artist: " + artist);
+    }
+    if (songName) {
+      console.log("Song: " + songName);
     }
     if (album) {
       console.log("Album: " + album);
@@ -130,9 +122,9 @@ function getMovie(param) {
       console.log("Language: " + JSON.parse(body).Language);
       console.log("Plot: " + JSON.parse(body).Plot);
       console.log("Actors: " + JSON.parse(body).Actors);
+      
     }
   });
-  
 }
 
 // function to run app based on contents of text file
@@ -150,7 +142,7 @@ function doWhatItSays() {
     // if a comma exists, split data by the comma and put into an array
     var dataArr = data.split(",");
     
-    // run the function matching that command and pass any arguments
+    // run the function matching the command in the text file and pass any arguments
     var app = dataArr[0];
     if (dataArr[1]) {
       var param = dataArr[1];
