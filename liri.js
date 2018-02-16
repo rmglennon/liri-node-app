@@ -14,19 +14,26 @@ var client = new Twitter(keys.twitter);
 
 //TODO: switch to inquirer to enable multiple words in searches
 
+// function to determine the input command and run the function matching that command
 function chooseAppToRun() {
-
+  
+  // capture the input as either two or three input arguments
   var app = process.argv[2];
-
+  if (process.argv[3]) {
+    var param = process.argv[3];
+  }
+  
+  // match the input with the function
+  // if none, then display usage help
   switch (app) {
     case "my-tweets":
       getTweets();
       break;
     case "spotify-this-song":
-      spotifySong();
+      spotifySong(param);
       break;
     case "movie-this":
-      getMovie();
+      getMovie(param);
       break;
     case "do-what-it-says":
       doWhatItSays();
@@ -38,15 +45,14 @@ function chooseAppToRun() {
 
 // function to get tweets from Twitter
 function getTweets() {
-
+  
   // use statuses/user_timeline endpoint to connect to Twitter API
-
   client.get("statuses/user_timeline", {screen_name: "rmglennon"}, function(error, tweets, response) {
-
+    
     if (error) {
       throw error;
     }
-
+    
     // return 20 most recent tweets and timestamp
     for (var i = 0; i < 20; i++) {
       console.log("Tweet " + (i + 1) + ": " + tweets[i].text);
@@ -56,38 +62,37 @@ function getTweets() {
 };
 
 // function to get song information from Spotify
-function spotifySong() {
-
-  // song to search is input argument
-  var songQuery = process.argv[3];
-
+function spotifySong(param) {
+  
+  // song to search is input argument, if one is passed
+  // if none, then set a default song to search
+  var songQuery = param;
+  
   if (!songQuery) {
     songQuery = "Never Gonna Give You Up";
   }
-
-  // use tracks endpoints to search for songs on Spotify
+  
+  // use tracks endpoint to search for a song on Spotify
   spotify.search({ type: "track", query: songQuery },
-
+  
   function(err, data) {
     if (err) {
       return console.log('Error occurred: ' + err);
     }
-
+    
     var songName = data.tracks.items[0].name;
     var artist = data.tracks.items[0].artists[0].name;
     var album = data.tracks.items[0].album.name;
     var previewURL = data.tracks.items[0].preview_url;
-
+    
     // print information about the song
-
-    // add statements to check because not all songs or information is found, and not all songs are available to preview on Spotify. If that happens, the search results can return null or undefined values.
+    // add statements to check if tracks data exists before trying to display it. Not all songs or information is found, and not all songs are available to preview on Spotify. If that happens, the search results can return null or undefined values.
     if (songName) {
       console.log("Song: " + songName);
     }
     else {
-      console.log("Cannot find that song. Try another one.");
+      console.log("That song was not found. Try another one.");
     }
-
     if (artist) {
       console.log("Artist: " + artist);
     }
@@ -101,21 +106,22 @@ function spotifySong() {
 }
 
 // function to get movie information from OMDb
-function getMovie() {
-
-  // title to search is input argument
-  var title = process.argv[3];
-
+function getMovie(param) {
+  
+  // movie title to search is input argument, if one is passed
+  // if none, then set a default movie to search
+  var title = param;
+  
   if (!title) {
     title = "Groundhog Day";
   }
-
-  // use request package to make a request to OMDb for the input title
+  
+  // use npm request package to make a request to OMDb for the input title
   request("http://www.omdbapi.com/?t=" + title + "&apikey=trilogy", function(error, response, body) {
-
+    
     // if no error and HTTP code 200, then parse movie information
     if (!error && response.statusCode === 200) {
-
+      
       console.log("Title: " + JSON.parse(body).Title);
       console.log("Year of release: " + JSON.parse(body).Year);
       console.log("IMDb rating: " + JSON.parse(body).imdbRating);
@@ -126,40 +132,47 @@ function getMovie() {
       console.log("Actors: " + JSON.parse(body).Actors);
     }
   });
-
+  
 }
 
 // function to run app based on contents of text file
 function doWhatItSays() {
-
+  
+  var textFile = "random.txt";
+  
   // use file system to read contents of random.txt
-  fs.readFile("random.txt", "utf8", function(error, data) {
-
+  fs.readFile(textFile, "utf8", function(error, data) {
+    
     if (error) {
       return console.log(error);
     }
-
-    // split data by comma and put into an array
+    
+    // if a comma exists, split data by the comma and put into an array
     var dataArr = data.split(",");
-
-    // TODO - pass in the paramter from the file for spotify and movie
+    
+    // run the function matching that command and pass any arguments
     var app = dataArr[0];
-    var param = dataArr[1];
-
+    if (dataArr[1]) {
+      var param = dataArr[1];
+    }
+    
+    // match the contents of the file with the function
+    // if none, then display usage help
     switch (app) {
       case "my-tweets":
         getTweets();
         break;
       case "spotify-this-song":
-        spotifySong();
+        spotifySong(param);
         break;
       case "movie-this":
-        getMovie();
+        getMovie(param);
         break;
       default:
-        console.log("Make sure the file is readable and contains the proper usage for my-tweets, spotify-this-song, or movie-this.");
+        console.log("Make sure the file contains the proper usage for my-tweets, spotify-this-song, or movie-this.");
     }
   });
 }
 
+// start program by choosing which app to run
 chooseAppToRun();
