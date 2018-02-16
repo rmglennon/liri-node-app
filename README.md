@@ -1,12 +1,36 @@
 # Access APIs in a Node console app
 
-LIRI, a _Language Interpretation and Recognition Interface_, is a command-line Node.js app. Following the usage guidelines, you can input a command and receive results back from the APIs of [Twitter](https://twitter.com), [Spotify](https://spotify.com), or [OMDb](http://www.omdbapi.com/).
+LIRI, a _Language Interpretation and Recognition Interface_, is a command-line Node.js app that allows you to input a command and receive results back from the APIs of [Twitter](https://twitter.com), [Spotify](https://spotify.com), or [OMDb](http://www.omdbapi.com/).
 
 ## Set up and installation
 
 You need to use your own API keys for [Twitter](https://apps.twitter.com/) and [Spotify](https://developer.spotify.com). Sign up and then paste them into the proper locations in the `.env` file for this app. 
 
+The `.env` file should look like this, with your own values used for the placeholders.
+
+```
+# Spotify API keys
+
+SPOTIFY_ID=your-spotify-id
+SPOTIFY_SECRET=your-spotify-secret
+
+# Twitter API keys
+
+TWITTER_CONSUMER_KEY=your-twitter-consumer-key
+TWITTER_CONSUMER_SECRET=your-twitter-consumer-secret
+TWITTER_ACCESS_TOKEN_KEY=your-access-token-key
+TWITTER_ACCESS_TOKEN_SECRET=your-twitter-access-token-secret
+```
+
 Optionally, sign up for an [OMDb](http://www.omdbapi.com/) API key and replace it in the request in `liri.js`.
+
+### Other requirements
+
+These must be installed to use LIRI.
+
+- [Node.js](https://nodejs.org/en/)
+- [npm](https://www.npmjs.com/get-npm)
+- [dotenv npm package](https://www.npmjs.com/package/dotenv)
 
 ## Usage 
 
