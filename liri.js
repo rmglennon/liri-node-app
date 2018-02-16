@@ -1,6 +1,8 @@
 // add required packages to project and import keys.js file
 require("dotenv").config();
 var keys = require("./keys.js");
+var fs = require("fs");
+
 // var inquirer = require("inquirer");
 
 var Twitter = require("twitter");
@@ -10,21 +12,27 @@ var request = require("request");
 var spotify = new Spotify(keys.spotify);
 var client = new Twitter(keys.twitter);
 
-//TODO: make into switch case
 //TODO: switch to inquirer to enable multiple words in searches
+
 function chooseAppToRun() {
-  if (process.argv[2] === "my-tweets") {
-    getTweets();
-  } else if (process.argv[2] === "spotify-this-song") {
-    spotifySong();
-  } else if (process.argv[2] === "movie-this") {
-    getMovie();
-  } else if (process.argv[2] === "do-what-it-says") {
-    // TODO: write function
-    console.log("TODO: Write this");
-  }
-  else {
-    console.log("Usage is my-tweets, spotify-this-song, movie-this, or do-what-it-says");
+
+  var app = process.argv[2];
+
+  switch (app) {
+    case "my-tweets":
+      getTweets();
+      break;
+    case "spotify-this-song":
+      spotifySong();
+      break;
+    case "movie-this":
+      getMovie();
+      break;
+    case "do-what-it-says":
+      doWhatItSays();
+      break;
+    default:
+      console.log("Usage is my-tweets, spotify-this-song, movie-this, or do-what-it-says");
   }
 }
 
@@ -121,7 +129,37 @@ function getMovie() {
 
 }
 
-//getTweets();
-//spotifySong();
-//getMovie();
+// function to run app based on contents of text file
+function doWhatItSays() {
+
+  // use file system to read contents of random.txt
+  fs.readFile("random.txt", "utf8", function(error, data) {
+
+    if (error) {
+      return console.log(error);
+    }
+
+    // split data by comma and put into an array
+    var dataArr = data.split(",");
+
+    // TODO - pass in the paramter from the file for spotify and movie
+    var app = dataArr[0];
+    var param = dataArr[1];
+
+    switch (app) {
+      case "my-tweets":
+        getTweets();
+        break;
+      case "spotify-this-song":
+        spotifySong();
+        break;
+      case "movie-this":
+        getMovie();
+        break;
+      default:
+        console.log("Make sure the file is readable and contains the proper usage for my-tweets, spotify-this-song, or movie-this.");
+    }
+  });
+}
+
 chooseAppToRun();
